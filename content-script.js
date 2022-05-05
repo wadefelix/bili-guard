@@ -19,7 +19,7 @@ function check_blocked_and_do(mid, func_ifblocked) {
     var res = oReq.send();
 }
 
-// Ê×Ò³
+// Ê×Ò³ // ÆµµÀÒ³
 function handle_all_owner_card() {
   var allVidioOwner = document.getElementsByClassName('bili-video-card__info--owner');
   let midRe = /bilibili\.com\/(\d*)\??/;
@@ -95,3 +95,15 @@ function handle_video_page() {
   })
 
 }
+
+
+
+let path = document.location.pathname;
+if (path.startsWith('/video/')) {
+  handle_video_page();
+} else if (path.startsWith('/account/history')) {
+  handle_history_page();
+} else if (path === '/' || path.startsWith('/v/')) {
+  handle_all_owner_card();
+}
+
