@@ -52,7 +52,7 @@ function handle_all_owner_card() {
   }
 }
 function registry_in_home_page() {
-  var targetNode = document.getElementsByClassName('bili-layout')[0];
+  var targetNode = document.getElementById('i_cecream');
   var config = { /*attributes: true,*/ childList: true, subtree: true };
   
   // 当观察到突变时执行的回调函数
