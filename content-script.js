@@ -1,13 +1,24 @@
 var browser = chrome;
 
+const FLAG_BLOCKED = '(已拉黑)';
+var BLOCKED_MIDS = new Map();
+
 var oReq = new XMLHttpRequest();
 oReq.withCredentials = true;
 function check_blocked_and_do(mid, func_ifblocked) {
+    if (BLOCKED_MIDS.has(mid)) {
+        if (BLOCKED_MIDS.get(mid) == 128) {
+            func_ifblocked();
+        }
+        return
+    }
+    
     oReq.open("get", 'https://api.bilibili.com/x/relation?fid=' + mid, false);
     oReq.onload = function(e) {
         if (this.status == 200) {
             var resobj = JSON.parse(this.responseText);
             // console.log(resobj.data.attribute);
+            BLOCKED_MIDS.set(mid, resobj.data.attribute);
             if (resobj.data.attribute == 128) {
                 func_ifblocked();
             }
@@ -30,7 +41,7 @@ function handle_all_owner_card() {
       check_blocked_and_do(reObj[1], function () {
           let ospan = owner.getElementsByClassName('bili-video-card__info--author');
           if (ospan) {
-            ospan[0].innerText += '(已拉黑)'
+            ospan[0].innerText += FLAG_BLOCKED;
           }
       });
     }
@@ -44,8 +55,12 @@ function handle_all_owner_card() {
 */
 
 // 历史记录页
+var history_record_count = 0;
 function handle_history_page() {
-  var allVideoOwner = document.getElementsByClassName('username');
+  var targetNode = document.getElementById('history_list');
+  var records = targetNode.getElementsByClassName('history-record');
+  if (history_record_count != records.length) {
+  var allVideoOwner = targetNode.getElementsByClassName('username');
   let midRe = /bilibili\.com\/(\d*)\??/;
   var oReq = new XMLHttpRequest();
   oReq.withCredentials = true;
@@ -55,11 +70,42 @@ function handle_history_page() {
     if (reObj) {
       console.log(reObj[1]);
       check_blocked_and_do(reObj[1], function () {
-          owner.innerText += '(已拉黑)'
+        if (owner.innerText.indexOf(FLAG_BLOCKED) < 0) {
+          owner.innerText += FLAG_BLOCKED;
+        }
       });
     }
   }
+  
+  history_record_count = records.length;
+  }
 }
+
+function registry_in_history_page() {
+  var targetNode = document.getElementById('history_list');
+  var config = { /*attributes: true,*/ childList: true, subtree: true };
+  
+  // 当观察到突变时执行的回调函数
+    var callback = function(mutationsList) {
+        mutationsList.forEach(function(item,index){
+            if (item.type == 'childList') {
+                //console.log('有节点发生改变，当前节点的内容是：');
+                //console.log(item.target.innerHTML);
+                handle_history_page();
+            } else if (item.type == 'attributes') {
+                console.log('修改了'+item.attributeName+'属性');
+            }
+        });
+    };
+
+    // 创建一个链接到回调函数的观察者实例
+    var observer = new MutationObserver(callback);
+
+    // 开始观察已配置突变的目标节点
+    observer.observe(targetNode, config);
+
+}
+
 
 // 视频播放页
 function handle_video_page() {
@@ -70,7 +116,7 @@ function handle_video_page() {
     let reObj = midRe.exec(info_a[0].href);
     if (reObj) {
       check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += '(已拉黑)'
+          info_a[0].innerText += FLAG_BLOCKED;
       });
     }
   }
@@ -80,7 +126,7 @@ function handle_video_page() {
     let users_commentlist = commentlist[0].getElementsByClassName('name');
     for (let u of users_commentlist) {
       check_blocked_and_do(u.dataset.usercardMid, function () {
-          u.innerText += '(已拉黑)'
+          u.innerText += FLAG_BLOCKED;
       });
     }
   }
@@ -94,7 +140,7 @@ function handle_video_page() {
       let reObj = midRe.exec(info_a[0].href);
       if (reObj) {
         check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += '(已拉黑)'
+          info_a[0].innerText += FLAG_BLOCKED;
         });
       }
     }
@@ -108,6 +154,7 @@ if (path.startsWith('/video/')) {
   handle_video_page();
 } else if (path.startsWith('/account/history')) {
   handle_history_page();
+  registry_in_history_page();
 } else if (path === '/' || path.startsWith('/v/')) {
   handle_all_owner_card();
 }
