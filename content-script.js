@@ -185,7 +185,7 @@ function handle_video_page() {
 }
 
 function registry_in_video_page() {
-  var targetNode = document.getElementById('comment-list');
+  var targetNode = document.getElementById('app');
   var config = { /*attributes: true,*/ childList: true, subtree: true };
   
   // 当观察到突变时执行的回调函数
