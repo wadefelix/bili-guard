@@ -1,7 +1,7 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "bili-guard",
-  "description": "屏蔽黑名单用户的视频",
+  "description": "bilibili guard",
   
   "version": "0.1",
   "default_locale": "en",
@@ -18,8 +18,11 @@
   ],
   
   "permissions": [
-    "cookies",
-    "*://*.bilibili.com"
+    "cookies"
+  ],
+  
+  "host_permissions": [
+    "https://*.bilibili.com/*"
   ],
   
   "icons": {

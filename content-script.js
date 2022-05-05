@@ -19,7 +19,7 @@ function check_blocked_and_do(mid, func_ifblocked) {
     var res = oReq.send();
 }
 
-// Ê×Ò³ // ÆµµÀÒ³
+// é¦–é¡µ // é¢‘é“é¡µ
 function handle_all_owner_card() {
   var allVidioOwner = document.getElementsByClassName('bili-video-card__info--owner');
   let midRe = /bilibili\.com\/(\d*)\??/;
@@ -30,7 +30,7 @@ function handle_all_owner_card() {
       check_blocked_and_do(reObj[1], function () {
           let ospan = owner.getElementsByClassName('bili-video-card__info--author');
           if (ospan) {
-            ospan[0].innerText += '(ÒÑÀ­ºÚ)'
+            ospan[0].innerText += '(å·²æ‹‰é»‘)'
           }
       });
     }
@@ -40,10 +40,10 @@ function handle_all_owner_card() {
 
 
 /*
-Ê×Ò³²»ÄÜÊ¹ÓÃjqµÄ$£¬ ¶øÊÓÆµ²¥·ÅÒ³ºÍÀúÊ·¼ÇÂ¼Ò³ÆäÊµ¿ÉÒÔÊ¹ÓÃjqueryµÄ¡£
+é¦–é¡µä¸èƒ½ä½¿ç”¨jqçš„$ï¼Œ è€Œè§†é¢‘æ’­æ”¾é¡µå’Œå†å²è®°å½•é¡µå…¶å®å¯ä»¥ä½¿ç”¨jqueryçš„ã€‚
 */
 
-// ÀúÊ·¼ÇÂ¼Ò³
+// å†å²è®°å½•é¡µ
 function handle_history_page() {
   var allVideoOwner = document.getElementsByClassName('username');
   let midRe = /bilibili\.com\/(\d*)\??/;
@@ -55,13 +55,13 @@ function handle_history_page() {
     if (reObj) {
       console.log(reObj[1]);
       check_blocked_and_do(reObj[1], function () {
-          owner.innerText += '(ÒÑÀ­ºÚ)'
+          owner.innerText += '(å·²æ‹‰é»‘)'
       });
     }
   }
 }
 
-// ÊÓÆµ²¥·ÅÒ³
+// è§†é¢‘æ’­æ”¾é¡µ
 function handle_video_page() {
   let upinfo_right = $('#v_upinfo');
   let info_a = upinfo_right.find('a.username');
@@ -70,7 +70,7 @@ function handle_video_page() {
     let reObj = midRe.exec(info_a[0].href);
     if (reObj) {
       check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += '(ÒÑÀ­ºÚ)'
+          info_a[0].innerText += '(å·²æ‹‰é»‘)'
       });
     }
   }
@@ -79,7 +79,7 @@ function handle_video_page() {
   users_commentlist.each(function () {
       let u = this;
       check_blocked_and_do(u.dataset.usercardMid, function () {
-          u.innerText += '(ÒÑÀ­ºÚ)'
+          u.innerText += '(å·²æ‹‰é»‘)'
       });
   })
   
@@ -89,7 +89,7 @@ function handle_video_page() {
     let reObj = midRe.exec(a.href);
     if (reObj) {
       check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += '(ÒÑÀ­ºÚ)'
+          info_a[0].innerText += '(å·²æ‹‰é»‘)'
       });
     }
   })
