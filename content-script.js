@@ -31,13 +31,15 @@ function check_blocked_and_do(mid, func_ifblocked) {
 }
 
 // 首页 // 频道页
+var video_card_count = 0;
 function handle_all_owner_card() {
   var allVidioOwner = document.getElementsByClassName('bili-video-card__info--owner');
+  if (video_card_count != allVidioOwner.length) {
   let midRe = /bilibili\.com\/(\d*)\??/;
   for (let owner of allVidioOwner) {
     let reObj = midRe.exec(owner.href);
     if (reObj) {
-      console.log(reObj[1]);
+      // console.log(reObj[1]);
       check_blocked_and_do(reObj[1], function () {
           let ospan = owner.getElementsByClassName('bili-video-card__info--author');
           if (ospan) {
@@ -46,8 +48,32 @@ function handle_all_owner_card() {
       });
     }
   }
+  video_card_count = allVidioOwner.length;
+  }
 }
+function registry_in_home_page() {
+  var targetNode = document.getElementsByClassName('bili-layout')[0];
+  var config = { /*attributes: true,*/ childList: true, subtree: true };
+  
+  // 当观察到突变时执行的回调函数
+    var callback = function(mutationsList) {
+        mutationsList.forEach(function(item,index){
+            if (item.type == 'childList') {
+                //console.log('有节点发生改变，当前节点的内容是：');
+                //console.log(item.target.innerHTML);
+                handle_all_owner_card();
+            } else if (item.type == 'attributes') {
+                console.log('修改了'+item.attributeName+'属性');
+            }
+        });
+    };
 
+    // 创建一个链接到回调函数的观察者实例
+    var observer = new MutationObserver(callback);
+
+    // 开始观察已配置突变的目标节点
+    observer.observe(targetNode, config);
+}
 
 
 /*
@@ -68,7 +94,7 @@ function handle_history_page() {
   for (let owner of allVideoOwner) {
     let reObj = midRe.exec(owner.parentElement.href);
     if (reObj) {
-      console.log(reObj[1]);
+      // console.log(reObj[1]);
       check_blocked_and_do(reObj[1], function () {
         if (owner.innerText.indexOf(FLAG_BLOCKED) < 0) {
           owner.innerText += FLAG_BLOCKED;
@@ -80,6 +106,7 @@ function handle_history_page() {
   history_record_count = records.length;
   }
 }
+
 
 function registry_in_history_page() {
   var targetNode = document.getElementById('history_list');
@@ -108,6 +135,7 @@ function registry_in_history_page() {
 
 
 // 视频播放页
+var comment_list_count = 0;
 function handle_video_page() {
   let upinfo_right = document.getElementById('v_upinfo');
   let info_a = upinfo_right.getElementsByClassName('username');
@@ -116,7 +144,9 @@ function handle_video_page() {
     let reObj = midRe.exec(info_a[0].href);
     if (reObj) {
       check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += FLAG_BLOCKED;
+          if (info_a[0].innerText.indexOf(FLAG_BLOCKED) < 0) {
+            info_a[0].innerText += FLAG_BLOCKED;
+          }
       });
     }
   }
@@ -124,10 +154,15 @@ function handle_video_page() {
   let commentlist = document.getElementsByClassName('comment-list');
   if (commentlist.length) {
     let users_commentlist = commentlist[0].getElementsByClassName('name');
-    for (let u of users_commentlist) {
-      check_blocked_and_do(u.dataset.usercardMid, function () {
-          u.innerText += FLAG_BLOCKED;
-      });
+    if (comment_list_count != users_commentlist.length) {
+      for (let u of users_commentlist) {
+        check_blocked_and_do(u.dataset.usercardMid, function () {
+          if (u.innerText.indexOf(FLAG_BLOCKED) < 0) {
+            u.innerText += FLAG_BLOCKED;
+          }
+        });
+      }
+      comment_list_count = users_commentlist.length;
     }
   }
   
@@ -140,22 +175,49 @@ function handle_video_page() {
       let reObj = midRe.exec(info_a[0].href);
       if (reObj) {
         check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += FLAG_BLOCKED;
+          if (info_a[0].innerText.indexOf(FLAG_BLOCKED) < 0) {
+            info_a[0].innerText += FLAG_BLOCKED;
+          }
         });
       }
     }
   }
 }
 
+function registry_in_video_page() {
+  var targetNode = document.getElementById('comment-list');
+  var config = { /*attributes: true,*/ childList: true, subtree: true };
+  
+  // 当观察到突变时执行的回调函数
+    var callback = function(mutationsList) {
+        mutationsList.forEach(function(item,index){
+            if (item.type == 'childList') {
+                //console.log('有节点发生改变，当前节点的内容是：');
+                //console.log(item.target.innerHTML);
+                handle_video_page();
+            } else if (item.type == 'attributes') {
+                console.log('修改了'+item.attributeName+'属性');
+            }
+        });
+    };
+
+    // 创建一个链接到回调函数的观察者实例
+    var observer = new MutationObserver(callback);
+
+    // 开始观察已配置突变的目标节点
+    observer.observe(targetNode, config);
+}
 
 
 let path = document.location.pathname;
 if (path.startsWith('/video/')) {
   handle_video_page();
+  registry_in_video_page();
 } else if (path.startsWith('/account/history')) {
   handle_history_page();
   registry_in_history_page();
 } else if (path === '/' || path.startsWith('/v/')) {
   handle_all_owner_card();
+  registry_in_home_page();
 }
 
