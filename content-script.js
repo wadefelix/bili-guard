@@ -63,8 +63,8 @@ function handle_history_page() {
 
 // 视频播放页
 function handle_video_page() {
-  let upinfo_right = $('#v_upinfo');
-  let info_a = upinfo_right.find('a.username');
+  let upinfo_right = document.getElementById('v_upinfo');
+  let info_a = upinfo_right.getElementsByClassName('username');
   let midRe = /bilibili\.com\/(\d*)\??/;
   if (info_a.length > 0) {
     let reObj = midRe.exec(info_a[0].href);
@@ -75,25 +75,30 @@ function handle_video_page() {
     }
   }
   
-  let users_commentlist = $('div.comment-list a.name');
-  users_commentlist.each(function () {
-      let u = this;
+  let commentlist = document.getElementsByClassName('comment-list');
+  if (commentlist.length) {
+    let users_commentlist = commentlist[0].getElementsByClassName('name');
+    for (let u of users_commentlist) {
       check_blocked_and_do(u.dataset.usercardMid, function () {
           u.innerText += '(已拉黑)'
       });
-  })
-  
-  let reco_list = $('div#reco_list div.video-page-card div.info div.up a');
-  reco_list.each(function(){
-    let info_a = this;
-    let reObj = midRe.exec(a.href);
-    if (reObj) {
-      check_blocked_and_do(reObj[1], function () {
-          info_a[0].innerText += '(已拉黑)'
-      });
     }
-  })
-
+  }
+  
+  
+  let reco_list = document.getElementById('reco_list');
+  let reco_list_up = reco_list.getElementsByClassName('up');
+  for (let up of reco_list_up) {
+    let info_a = up.getElementsByTagName('a');
+    if (info_a.length) {
+      let reObj = midRe.exec(info_a[0].href);
+      if (reObj) {
+        check_blocked_and_do(reObj[1], function () {
+          info_a[0].innerText += '(已拉黑)'
+        });
+      }
+    }
+  }
 }
 
 
