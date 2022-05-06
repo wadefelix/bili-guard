@@ -1,0 +1,11 @@
+﻿{
+  "extensionName": {
+    "message": "B站黑名单提示器",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "对于已拉黑的UP主，将它们标识出来。B站推荐有毒，即使拉黑了，它们的内容也可能出现在推荐列表中。",
+    "description": "Description of the add-on."
+  }
+}

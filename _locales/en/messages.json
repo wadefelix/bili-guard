@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "bilibili blocked-uploader marker",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Mark the blocked-uploaders on the site.",
+    "description": "Description of the add-on."
+  }
+}
